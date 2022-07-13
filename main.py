@@ -302,7 +302,7 @@ def main():
                     # update last cooldown each fire
                     last_cooldown=pygame.time.get_ticks()
                 # if on cooldown check if 2 seconds (2000 ms) passed
-                elif(pygame.time.get_ticks()-last_cooldown >=2000):
+            if(pygame.time.get_ticks()-last_cooldown >=2000):
                     gun_state="ready"
                     num_bullets=0
             # update not fired bullet positions to player
