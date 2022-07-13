@@ -173,6 +173,9 @@ settings_mainmenu_X = settings_quit_img.get_width()
 settings_mainmenu_Y = settings_quit_img.get_height()
 settings_mainmenu_img_HL = pygame.image.load('./Images/Settings/MainMenu_HL.png')
 
+# Game clock
+clock = pygame.time.Clock()
+last_cooldown=pygame.time.get_ticks()
 
 
 # *****************************
@@ -187,7 +190,7 @@ def reset():
     playerY = screen_Y - player_Y - status_bar_height
     num_bullets=0
 
-# Displays gun reloading and current bullets in window_state "play"
+# Displays gun reloading text and current bullets in window_state "play"
 def display_gun_status(bullets,max_bullets):
     if(bullets+1==max_bullets):
         gun_status=font.render("Reloading..",True,(255,255,255))
@@ -199,9 +202,82 @@ def display_gun_status(bullets,max_bullets):
 def display_player(x,y):
     window.blit(player_img,(x,y))
 
-# Game clock
-clock = pygame.time.Clock()
+# Move bullets and handle gun states
+def update_bullets():
+    global gun_state,num_bullets,max_bullets,bulletsX,bulletsY
+    global playerX,playerY,last_cooldown
+    if gun_state=="fire":
+        if(num_bullets+1!=max_bullets):
+            gun_state="ready"
+            num_bullets=(num_bullets+1) % max_bullets
+            bulletsX[num_bullets]=playerX
+            bulletsY[num_bullets]=playerY
+            # update last cooldown each fire
+            last_cooldown=pygame.time.get_ticks()
+    # if on cooldown check if 2 seconds (2000 ms) passed
+    if(pygame.time.get_ticks()-last_cooldown >=2000 and not (num_bullets+1!=max_bullets)):
+            gun_state="ready"
+            num_bullets=0
+    # update not fired bullet positions to player
+    for i in range(num_bullets,max_bullets):
+        bulletsX[i]=playerX+player_X/2-guns_laser_X/2
+        bulletsY[i]=playerY
+    # Move fired bullet positions
+    for i in range(num_bullets):
+        bulletsY[i]-=20
+        window.blit(guns_laser_img,(bulletsX[i],bulletsY[i]))
 
+# Displaying images/text only for mainmenu
+def mainmenu_display():
+    global play_btn_img,play_btn_startX,play_btn_img_HL,play_btn_X,play_btn_startY,play_btn_Y
+    mouse_pos = pygame.mouse.get_pos()
+    # Check for Hovering over button
+    # Display highlighted (HL) btn
+    if (mouse_pos[0]>=play_btn_startX and mouse_pos[0]<=play_btn_startX+play_btn_X and mouse_pos[1]>=play_btn_startY and mouse_pos[1]<=play_btn_startY+play_btn_Y):
+        window.blit(play_btn_img_HL,(play_btn_startX,play_btn_startY))
+    else:
+        window.blit(play_btn_img,(play_btn_startX,play_btn_startY))
+
+# Displaying images/text only for settings
+def settings_display():
+    global window,settings_title_img,screen_X,settings_title_X
+    global screen_X,settings_quit_X,screen_Y,settings_quit_Y
+    global settings_quit_img_HL,settings_quit_img
+    global settings_mainmenu_X,settings_mainmenu_Y,settings_mainmenu_img_HL,settings_mainmenu_img
+    # Settings Title
+    window.blit(settings_title_img,(screen_X/2-settings_title_X/2,30))
+    # Check for hovering and display appropriate HL btn img
+    mouse_pos = pygame.mouse.get_pos()
+    # Quit BTN
+    if (mouse_pos[0]>=screen_X-settings_quit_X and mouse_pos[1]>=screen_Y-settings_quit_Y):
+        window.blit(settings_quit_img_HL,(screen_X-settings_quit_X,screen_Y-settings_quit_Y))
+    else:
+        window.blit(settings_quit_img,(screen_X-settings_quit_X,screen_Y-settings_quit_Y))
+            
+    # Main Menu BTN
+    if (mouse_pos[0]<=settings_mainmenu_X and mouse_pos[1]>=screen_Y-settings_mainmenu_Y):
+        window.blit(settings_mainmenu_img_HL,(0,screen_Y-settings_mainmenu_Y))
+    else:
+        window.blit(settings_mainmenu_img,(0,screen_Y-settings_mainmenu_Y))
+
+def update_playerpos():
+    global playerX,playerY,playerX_change,playerY_change,player_speed_multiplier
+    global screen_X,screen_Y,player_X,player_Y,status_bar_height
+    # Update player position
+    # with speed multiplier
+    playerX+=playerX_change*player_speed_multiplier
+    playerY+=playerY_change*player_speed_multiplier
+
+    # Check for boundaries
+    if(playerX>=screen_X-player_X):
+        playerX=screen_X-player_X
+    elif playerX<=0:
+        playerX=0
+    if playerY>=screen_Y-player_Y-status_bar_height:
+        playerY=screen_Y-player_Y-status_bar_height
+    elif playerY<=0:
+        playerY=0
+            
 
 
 # **************************
@@ -210,7 +286,7 @@ clock = pygame.time.Clock()
 
 def main():
     global playerX,playerX_change,num_bullets,max_bullets,status_bar_height
-    global playerY,playerY_change,gun_state, current_menu_frame,play_frames
+    global playerY,playerY_change,gun_state, current_menu_frame,play_frames,last_cooldown
     run=True
     window_state = "main_menu"
 
@@ -219,18 +295,18 @@ def main():
 
     #Game Loop
     while run:
-        # BGD
-        
-            
         # Game CLOCK
         clock.tick(60)
-
+        
+        # BGD
         if window_state != "main_menu":
             window.fill((0,0,0))
         else:
             window.blit(play_frames[current_menu_frame],(0, 0))
             current_menu_frame = (current_menu_frame+1)%6
 
+    #**************************************************
+    # Looping on events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run=False
@@ -248,7 +324,7 @@ def main():
                 if event.key == pygame.K_SPACE and window_state=="play":
                     if gun_state=="ready":
                         gun_state="fire"
-
+            
                 # Movement KEYS
                 if event.key == pygame.K_d:
                     playerX_change=5
@@ -258,7 +334,7 @@ def main():
                     playerY_change=-5
                 elif event.key == pygame.K_s:
                     playerY_change=5
-                
+            
             if event.type == pygame.KEYUP:
                 # Movement KEYS adjustment
                 if event.key == pygame.K_d and playerX_change>=0:
@@ -269,9 +345,11 @@ def main():
                     playerY_change=0
                 elif event.key == pygame.K_s and playerY_change>=0:
                     playerY_change=0
-            
-            # Check for button clicks
 
+        #==========================================
+        # --==BUTTON CLICKS ON ANY WINDOW STATE==--
+
+            # Check for button clicks
             # MAIN MENU BUTTONS
             if(window_state=="main_menu"):
                 mouse_pos = pygame.mouse.get_pos()
@@ -293,56 +371,23 @@ def main():
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         reset()
                         window_state="main_menu"
-                # TODO: Add extra buttons
-            
-        
+                # TODO: Add extra butt
+        #==========================================
+
+    # Finished looping on events
+    #**************************************************
+
+#**************************************************
+# --===Displays===--
         # Main Menu display
         if window_state=="main_menu":
-            mouse_pos = pygame.mouse.get_pos()
-            # Check for Hovering over button
-            # Display highlighted (HL) btn
-            if (mouse_pos[0]>=play_btn_startX and mouse_pos[0]<=play_btn_startX+play_btn_X and mouse_pos[1]>=play_btn_startY and mouse_pos[1]<=play_btn_startY+play_btn_Y):
-                window.blit(play_btn_img_HL,(play_btn_startX,play_btn_startY))
-            else:
-                window.blit(play_btn_img,(play_btn_startX,play_btn_startY))
+            mainmenu_display()
         # Play display
         elif window_state=="play":
-            # Update player position
-            # with speed multiplier
-            playerX+=playerX_change*player_speed_multiplier
-            playerY+=playerY_change*player_speed_multiplier
-
-            # Check for boundaries
-            if(playerX>=screen_X-player_X):
-                playerX=screen_X-player_X
-            elif playerX<=0:
-                playerX=0
-            if playerY>=screen_Y-player_Y-status_bar_height:
-                playerY=screen_Y-player_Y-status_bar_height
-            elif playerY<=0:
-                playerY=0
-            
+            # Handle player position
+            update_playerpos()
             # Handle Gun states
-            if gun_state=="fire":
-                if(num_bullets+1!=max_bullets):
-                    gun_state="ready"
-                    num_bullets=(num_bullets+1) % max_bullets
-                    bulletsX[num_bullets]=playerX
-                    bulletsY[num_bullets]=playerY
-                    # update last cooldown each fire
-                    last_cooldown=pygame.time.get_ticks()
-                # if on cooldown check if 2 seconds (2000 ms) passed
-            if(pygame.time.get_ticks()-last_cooldown >=2000 and not (num_bullets+1!=max_bullets)):
-                    gun_state="ready"
-                    num_bullets=0
-            # update not fired bullet positions to player
-            for i in range(num_bullets,max_bullets):
-                bulletsX[i]=playerX+player_X/2-guns_laser_X/2
-                bulletsY[i]=playerY
-            # Move fired bullet positions
-            for i in range(num_bullets):
-                bulletsY[i]-=20
-                window.blit(guns_laser_img,(bulletsX[i],bulletsY[i]))
+            update_bullets()
 
             # Display Gun status and player
             display_gun_status(num_bullets,max_bullets)
@@ -350,22 +395,8 @@ def main():
         
         # Settings display
         elif window_state=="settings":
-            # Settings Title
-            window.blit(settings_title_img,(screen_X/2-settings_title_X/2,30))
-            # Check for hovering and display appropriate HL btn img
-
-            # Quit BTN
-            if (mouse_pos[0]>=screen_X-settings_quit_X and mouse_pos[1]>=screen_Y-settings_quit_Y):
-                window.blit(settings_quit_img_HL,(screen_X-settings_quit_X,screen_Y-settings_quit_Y))
-            else:
-                window.blit(settings_quit_img,(screen_X-settings_quit_X,screen_Y-settings_quit_Y))
-            
-            # Main Menu BTN
-            if (mouse_pos[0]<=settings_mainmenu_X and mouse_pos[1]>=screen_Y-settings_mainmenu_Y):
-                window.blit(settings_mainmenu_img_HL,(0,screen_Y-settings_mainmenu_Y))
-            else:
-                window.blit(settings_mainmenu_img,(0,screen_Y-settings_mainmenu_Y))
-
+            settings_display()
+#**************************************************
         # Update Screen
         pygame.display.update()
 
