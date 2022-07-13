@@ -1,4 +1,10 @@
-import pygame
+try:
+    import pygame
+except:
+    import pip
+    pip.main(['install', 'pygame'])
+    import pygame
+
 import random
 import math
 import time
