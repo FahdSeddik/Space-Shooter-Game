@@ -126,6 +126,7 @@ for i in range(max_bullets):
 # --===Loading Menu Images===--
 # *****************************
 
+# Main Menu
 #name_img = pygame.image.load('GameName.png')
 play_btn_img = pygame.image.load('./Images/Menu/PlayBTN.png')
 play_btn_img_HL = pygame.image.load('./Images/Menu/PlayBTN_HL.png')
@@ -133,12 +134,19 @@ play_btn_X = play_btn_img.get_width()
 play_btn_Y = play_btn_img.get_height()
 play_btn_startX = screen_X*0.5-play_btn_X*0.5
 play_btn_startY = screen_Y*0.5-play_btn_Y*0.5
+
 play_frame0 = pygame.image.load('./Images/Menu/Background/0.png')
+play_frame0 = pygame.transform.scale(play_frame0,(screen_X,screen_Y))
 play_frame1 = pygame.image.load('./Images/Menu/Background/1.png')
+play_frame1 = pygame.transform.scale(play_frame1,(screen_X,screen_Y))
 play_frame2 = pygame.image.load('./Images/Menu/Background/2.png')
+play_frame2 = pygame.transform.scale(play_frame2,(screen_X,screen_Y))
 play_frame3 = pygame.image.load('./Images/Menu/Background/3.png')
+play_frame3 = pygame.transform.scale(play_frame3,(screen_X,screen_Y))
 play_frame4 = pygame.image.load('./Images/Menu/Background/4.png')
+play_frame4 = pygame.transform.scale(play_frame4,(screen_X,screen_Y))
 play_frame5 = pygame.image.load('./Images/Menu/Background/5.png')
+play_frame5 = pygame.transform.scale(play_frame5,(screen_X,screen_Y))
 play_frames = [play_frame0,  play_frame1, play_frame2, play_frame3, play_frame4,play_frame5]
 current_menu_frame = 0
 
@@ -188,10 +196,7 @@ def display_player(x,y):
 # Game clock
 clock = pygame.time.Clock()
 
-# Main menu refresh
-def mainmenu_background(i):
-    global play_frames
-    window.blit(play_frames[i],(0, 0))
+
 
 # **************************
 # ----=======Main=======----
@@ -199,7 +204,7 @@ def mainmenu_background(i):
 
 def main():
     global playerX,playerX_change,num_bullets,max_bullets,status_bar_height
-    global playerY,playerY_change,gun_state, current_menu_frame
+    global playerY,playerY_change,gun_state, current_menu_frame,play_frames
     run=True
     window_state = "main_menu"
 
@@ -209,11 +214,17 @@ def main():
     #Game Loop
     while run:
         # BGD
-        if window_state != "main_menu":
-            window.fill((0,0,0))
+        
+            
         # Game CLOCK
         clock.tick(60)
-        
+
+        if window_state != "main_menu":
+            window.fill((0,0,0))
+        else:
+            window.blit(play_frames[current_menu_frame],(0, 0))
+            current_menu_frame = (current_menu_frame+1)%6
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run=False
@@ -281,12 +292,6 @@ def main():
         
         # Main Menu display
         if window_state=="main_menu":
-            if current_menu_frame <= 5:
-                mainmenu_background(current_menu_frame)
-                current_menu_frame += 1
-            else:
-                current_menu_frame = 0
-                mainmenu_background(current_menu_frame)
             mouse_pos = pygame.mouse.get_pos()
             # Check for Hovering over button
             # Display highlighted (HL) btn
