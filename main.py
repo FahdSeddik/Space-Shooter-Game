@@ -133,6 +133,14 @@ play_btn_X = play_btn_img.get_width()
 play_btn_Y = play_btn_img.get_height()
 play_btn_startX = screen_X*0.5-play_btn_X*0.5
 play_btn_startY = screen_Y*0.5-play_btn_Y*0.5
+play_frame0 = pygame.image.load('./Images/Menu/Background/0.png')
+play_frame1 = pygame.image.load('./Images/Menu/Background/1.png')
+play_frame2 = pygame.image.load('./Images/Menu/Background/2.png')
+play_frame3 = pygame.image.load('./Images/Menu/Background/3.png')
+play_frame4 = pygame.image.load('./Images/Menu/Background/4.png')
+play_frame5 = pygame.image.load('./Images/Menu/Background/5.png')
+play_frames = [play_frame0,  play_frame1, play_frame2, play_frame3, play_frame4,play_frame5]
+current_menu_frame = 0
 
 #settings_btn_img = pygame.image.load('SettingsBTN.png')
 
@@ -150,6 +158,7 @@ settings_mainmenu_img = pygame.image.load('./Images/Settings/MainMenu.png')
 settings_mainmenu_X = settings_quit_img.get_width()
 settings_mainmenu_Y = settings_quit_img.get_height()
 settings_mainmenu_img_HL = pygame.image.load('./Images/Settings/MainMenu_HL.png')
+
 
 
 # *****************************
@@ -179,6 +188,10 @@ def display_player(x,y):
 # Game clock
 clock = pygame.time.Clock()
 
+# Main menu refresh
+def mainmenu_background(i):
+    global play_frames
+    window.blit(play_frames[i],(0, 0))
 
 # **************************
 # ----=======Main=======----
@@ -186,7 +199,7 @@ clock = pygame.time.Clock()
 
 def main():
     global playerX,playerX_change,num_bullets,max_bullets,status_bar_height
-    global playerY,playerY_change,gun_state
+    global playerY,playerY_change,gun_state, current_menu_frame
     run=True
     window_state = "main_menu"
 
@@ -196,7 +209,8 @@ def main():
     #Game Loop
     while run:
         # BGD
-        window.fill((0,0,0))
+        if window_state != "main_menu":
+            window.fill((0,0,0))
         # Game CLOCK
         clock.tick(60)
         
@@ -243,7 +257,6 @@ def main():
 
             # MAIN MENU BUTTONS
             if(window_state=="main_menu"):
-                
                 mouse_pos = pygame.mouse.get_pos()
                 # Play Button
                 if (mouse_pos[0]>=play_btn_startX and mouse_pos[0]<=play_btn_startX+play_btn_X and mouse_pos[1]>=play_btn_startY and mouse_pos[1]<=play_btn_startY+play_btn_Y):
@@ -268,6 +281,12 @@ def main():
         
         # Main Menu display
         if window_state=="main_menu":
+            if current_menu_frame <= 5:
+                mainmenu_background(current_menu_frame)
+                current_menu_frame += 1
+            else:
+                current_menu_frame = 0
+                mainmenu_background(current_menu_frame)
             mouse_pos = pygame.mouse.get_pos()
             # Check for Hovering over button
             # Display highlighted (HL) btn
