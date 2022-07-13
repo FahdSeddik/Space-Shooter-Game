@@ -13,7 +13,10 @@ screen_X, screen_Y = window.get_size()
 # play -- for play
 window_state = "main_menu"         
 
+# Font
+font = pygame.font.Font('./Fonts/Minecraft.ttf',64)
 
+status_bar_height=font.render("R",True,(255,255,255)).get_height()
 # Loading images
 
 # Player
@@ -49,7 +52,7 @@ bulletsX=[]
 bulletsY=[]
 
 num_bullets=0
-max_bullets=50
+max_bullets=51
 for i in range(max_bullets):
     bulletsX.append(playerX+player_X/2-guns_laser_X/2)
     bulletsY.append(playerY)
@@ -81,9 +84,17 @@ settings_mainmenu_img_HL = pygame.image.load('./Images/Settings/MainMenu_HL.png'
 
 
 def reset():
-    global playerX,playerY
+    global playerX,playerY,num_bullets
     playerX = screen_X/2 - player_X/2
-    playerY = screen_Y - player_Y - 20
+    playerY = screen_Y - player_Y - status_bar_height
+    num_bullets=0
+
+def display_gun_status(bullets,max_bullets):
+    if(bullets+1==max_bullets):
+        gun_status=font.render("Reloading..",True,(255,255,255))
+    else:
+        gun_status=font.render("Gun: "+ str(bullets)+"/"+str(max_bullets-1),True,(255,255,255))
+    window.blit(gun_status,(screen_X-gun_status.get_width(),screen_Y-gun_status.get_height()))
 
 
 def display_player(x,y):
@@ -92,7 +103,7 @@ def display_player(x,y):
 clock = pygame.time.Clock()
 
 def main():
-    global playerX,playerX_change,num_bullets,max_bullets
+    global playerX,playerX_change,num_bullets,max_bullets,status_bar_height
     global playerY,playerY_change,gun_state
     run=True
     window_state = "main_menu"
@@ -162,8 +173,8 @@ def main():
                 playerX=screen_X-player_X
             elif playerX<=0:
                 playerX=0
-            if playerY>=screen_Y-player_Y:
-                playerY=screen_Y-player_Y
+            if playerY>=screen_Y-player_Y-status_bar_height:
+                playerY=screen_Y-player_Y-status_bar_height
             elif playerY<=0:
                 playerY=0
             
@@ -184,6 +195,7 @@ def main():
             for i in range(num_bullets):
                 bulletsY[i]-=20
                 window.blit(guns_laser_img,(bulletsX[i],bulletsY[i]))
+            display_gun_status(num_bullets,max_bullets)
             display_player(playerX,playerY)
         elif window_state=="settings":
             window.blit(settings_title_img,(screen_X/2-settings_title_X/2,30))
