@@ -2,7 +2,7 @@ import pygame
 import random
 import math
 import time
-
+import os
 
 pygame.init()
 
@@ -19,7 +19,9 @@ font = pygame.font.Font('./Fonts/Minecraft.ttf',64)
 status_bar_height=font.render("R",True,(255,255,255)).get_height()
 # Loading images
 
-# Player
+# ****************************
+# ----=======Player=======----
+# ****************************
 player_img = pygame.image.load('./Images/Player/Player_0.png')
 player_X = player_img.get_width()
 player_Y = player_img.get_height()
@@ -34,14 +36,72 @@ player_speed_multiplier = 3
 player_state="still"
 gun_state="ready"
 
-# Enemies
-enemy_img=[]
-enemy_X=[]
-enemy_Y=[]
-enemyX=[]
-enemyY=[]
 
-# Guns/bullets/lasers
+# *****************************
+# ----=======Enemies=======----
+# *****************************
+# Enemies divide into 3 Categories
+# - Aliens: small
+# - Bosses: large
+# - Structures: stationary
+
+
+# has different alien images
+alien_img=[]
+# contains dimensions of each alien image
+alien_X=[]
+alien_Y=[]
+
+# has locations of aliens on screen
+alienX=[]
+alienY=[]
+
+LIST_DIR_ALIENS = os.listdir('./Images/Enemy/Aliens')
+num_aliens = len(LIST_DIR_ALIENS)
+for i in range(num_aliens):
+    alien_img.append(pygame.image.load('./Images/Enemy/Aliens/Alien_'+str(i)+'.png'))
+    alien_X.append(alien_img[i].get_width())
+    alien_Y.append(alien_img[i].get_height())
+    
+# has different boss images
+boss_img=[]
+# contains dimensions of each boss image
+boss_X=[]
+boss_Y=[]
+
+# has locations of boss on screen
+bossX=[]
+bossY=[]
+LIST_DIR_BOSSES = os.listdir('./Images/Enemy/Bosses')
+num_bosses = len(LIST_DIR_BOSSES)
+for i in range(num_bosses):
+    boss_img.append(pygame.image.load('./Images/Enemy/Bosses/Boss_'+str(i)+'.png'))
+    boss_X.append(boss_img[i].get_width())
+    boss_Y.append(boss_img[i].get_height())
+
+
+# has different structure images
+structure_img=[]
+# contains dimensions of each structure image
+structure_X=[]
+structure_Y=[]
+
+# has locations of structure on screen
+structureX=[]
+structureY=[]
+LIST_DIR_STRUCTURES = os.listdir('./Images/Enemy/Structures')
+num_structures = len(LIST_DIR_STRUCTURES)
+for i in range(num_structures):
+    structure_img.append(pygame.image.load('./Images/Enemy/Structures/Structure_'+str(i)+'.png'))
+    structure_X.append(structure_img[i].get_width())
+    structure_Y.append(structure_img[i].get_height())
+
+
+
+# ****************************
+# -----=======Guns=======-----
+# ****************************
+
 guns_laser_img = pygame.image.load('./Images/Guns/laser.png')
 guns_laser_X = guns_laser_img.get_width()
 guns_laser_Y = guns_laser_img.get_height()
@@ -62,7 +122,10 @@ for i in range(max_bullets):
     bulletsX.append(playerX+player_X/2-guns_laser_X/2)
     bulletsY.append(playerY)
 
-# Main Menu 
+# *****************************
+# --===Loading Menu Images===--
+# *****************************
+
 #name_img = pygame.image.load('GameName.png')
 play_btn_img = pygame.image.load('./Images/Menu/PlayBTN.png')
 play_btn_img_HL = pygame.image.load('./Images/Menu/PlayBTN_HL.png')
@@ -88,6 +151,11 @@ settings_mainmenu_X = settings_quit_img.get_width()
 settings_mainmenu_Y = settings_quit_img.get_height()
 settings_mainmenu_img_HL = pygame.image.load('./Images/Settings/MainMenu_HL.png')
 
+
+# *****************************
+# ----======Functions======----
+# *****************************
+
 # Reset function
 # called when window_state changes from "play" to "main_menu"
 def reset():
@@ -110,6 +178,11 @@ def display_player(x,y):
 
 # Game clock
 clock = pygame.time.Clock()
+
+
+# **************************
+# ----=======Main=======----
+# **************************
 
 def main():
     global playerX,playerX_change,num_bullets,max_bullets,status_bar_height
