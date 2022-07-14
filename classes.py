@@ -136,3 +136,50 @@ class gun:
     def scale(self, multiplyer):
         self.dimension = [self.dimension[0] * multiplyer, self.dimension[1]* multiplyer]
         self.state = pygame.transform.scale(self.state, (self.dimension[0], self.dimension[1]))
+
+class explosion:
+    def __init__(self, window, position):
+        self.window = window
+        self.x = position[0]
+        self.y = position[1]
+        self.spriteImages = []
+        self.spriteFolder = './Images/Explosion'
+        explosionSprites = os.listdir(self.spriteFolder)
+        numImages = len(explosionSprites)
+        for i in range(numImages):
+            image = pygame.image.load(self.spriteFolder + '/' + str(i) + '.png')
+            image = pygame.transform.scale(image, (image.get_width()/2, image.get_height()/2))
+            self.spriteImages.append(image)
+            self.spriteImages.append(image)
+            self.spriteImages.append(image)
+            self.spriteImages.append(image)
+        self.currentFrame = self.spriteImages[0]
+        self.counter = 0
+
+    def __del__(self):
+        pass
+
+    def animate(self):
+        if self.counter == len(self.spriteImages):
+            self.__del__()
+        else:
+            self.window.blit(self.spriteImages[self.counter], (self.x, self.y))
+            self.counter += 1
+
+class mainMenuBGD:
+    def __init__(self, window, folder):
+        self.window = window
+        self.bgdFolder = folder
+        self.bgdImages = []
+        backgroundFrames = os.listdir(self.bgdFolder)
+        numImages = len(backgroundFrames)
+        for i in range(numImages):
+            image = pygame.image.load(self.bgdFolder + '/' + str(i) + '.png')
+            self.bgdImages.append(image)
+        self.counter = 0
+        self.currentFrame = self.bgdImages[0]
+
+
+    def animate(self):
+        self.window.blit(self.bgdImages[self.counter], (0,0))
+        self.counter = (self.counter + 1)% len(self.bgdImages)
