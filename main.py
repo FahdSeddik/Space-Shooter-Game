@@ -86,6 +86,10 @@ def display_gun_status(bullets,max_bullets):
         gun_status=font.render("Gun: "+ str(bullets)+"/"+str(max_bullets-1),True,(255,255,255))
     window.blit(gun_status,(screen_X-gun_status.get_width(),screen_Y-gun_status.get_height()))
 
+def display_wave(level):
+    wave = font.render("Wave: " + str(level),True,(255,255,255))
+    window.blit(wave,(0,screen_Y-wave.get_height()))
+
 # Displaying images/text only for mainmenu
 def mainmenu_display():
     global play_btn_img,play_btn_startX,play_btn_img_HL,play_btn_X,play_btn_startY,play_btn_Y
@@ -133,13 +137,14 @@ def main():
     Gun.resetBulletPositions()
     run=True
     window_state = "main_menu"
-    exp = explosion(window, (200, 500))
+    
     playBGD = playBackground(window, './Images/Playing/0.jpg', 100)
 
 
     level=1
-    Waves=Wave(window,5,1)
+    Waves=Wave(window,difficulty=level)
     Waves.spawn_enemies()
+    next_wave=False
     # last cooldown for gun reloading
     Gun.lastCooldown = pygame.time.get_ticks()
     counter = 0
@@ -182,6 +187,8 @@ def main():
                 if event.key == pygame.K_SPACE and window_state=="play":
                     if Player.getGunState() == 'ready':
                         Player.setGunState('fire')
+                if event.key ==pygame.K_l:
+                    next_wave=True
             
                 # Movement KEYS
                 if event.key == pygame.K_d:
@@ -243,7 +250,7 @@ def main():
             mainmenu_display()
         # Play display
         elif window_state=="play":
-            exp.animate()
+            
             # Handle player position
             Player.updatePlayerPosition()
             # Handle Gun states
@@ -251,9 +258,15 @@ def main():
 
             # Display Gun status and player
             display_gun_status(Gun.numBullets,Gun.maxBullets)
+            display_wave(level)
             Player.display()
             Waves.update_enemies()
-        
+            if Waves.isDead() or next_wave:
+                next_wave=False
+                level+=1
+                Waves=Wave(window,difficulty=level)
+                Waves.spawn_enemies()
+
         # Settings display
         elif window_state=="settings":
             settings_display()
