@@ -4,8 +4,6 @@ except:
     import pip
     pip.main(['install', 'pygame'])
     import pygame
-
-import random
 import math
 import time
 import os
@@ -24,66 +22,6 @@ window_state = "main_menu"
 font = pygame.font.Font('./Fonts/Minecraft.ttf',64)
 
 status_bar_height=font.render("R",True,(255,255,255)).get_height()
-
-
-# *****************************
-# ----=======Enemies=======----
-# *****************************
-# Enemies divide into 3 Categories
-# - Aliens: small
-# - Bosses: large
-# - Structures: stationary
-
-
-# has different alien images
-alien_img=[]
-# contains dimensions of each alien image
-alien_X=[]
-alien_Y=[]
-
-# has locations of aliens on screen
-alienX=[]
-alienY=[]
-
-LIST_DIR_ALIENS = os.listdir('./Images/Enemy/Aliens')
-num_aliens = len(LIST_DIR_ALIENS)
-for i in range(num_aliens):
-    alien_img.append(pygame.image.load('./Images/Enemy/Aliens/Alien_'+str(i)+'.png'))
-    alien_X.append(alien_img[i].get_width())
-    alien_Y.append(alien_img[i].get_height())
-    
-# has different boss images
-boss_img=[]
-# contains dimensions of each boss image
-boss_X=[]
-boss_Y=[]
-
-# has locations of boss on screen
-bossX=[]
-bossY=[]
-LIST_DIR_BOSSES = os.listdir('./Images/Enemy/Bosses')
-num_bosses = len(LIST_DIR_BOSSES)
-for i in range(num_bosses):
-    boss_img.append(pygame.image.load('./Images/Enemy/Bosses/Boss_'+str(i)+'.png'))
-    boss_X.append(boss_img[i].get_width())
-    boss_Y.append(boss_img[i].get_height())
-
-
-# has different structure images
-structure_img=[]
-# contains dimensions of each structure image
-structure_X=[]
-structure_Y=[]
-
-# has locations of structure on screen
-structureX=[]
-structureY=[]
-LIST_DIR_STRUCTURES = os.listdir('./Images/Enemy/Structures')
-num_structures = len(LIST_DIR_STRUCTURES)
-for i in range(num_structures):
-    structure_img.append(pygame.image.load('./Images/Enemy/Structures/Structure_'+str(i)+'.png'))
-    structure_X.append(structure_img[i].get_width())
-    structure_Y.append(structure_img[i].get_height())
 
 
 # *****************************
@@ -197,7 +135,9 @@ def main():
     window_state = "main_menu"
     exp = explosion(window, (200, 500))
 
-
+    level=1
+    Waves=Wave(window,5,1)
+    Waves.spawn_enemies()
     # last cooldown for gun reloading
     Gun.lastCooldown = pygame.time.get_ticks()
     counter = 0
@@ -306,6 +246,7 @@ def main():
             # Display Gun status and player
             display_gun_status(Gun.numBullets,Gun.maxBullets)
             Player.display()
+            Waves.update_enemies()
         
         # Settings display
         elif window_state=="settings":
