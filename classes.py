@@ -3,7 +3,7 @@ import math
 import pygame
 import os
 from math import sqrt
-
+import random
 
 class player:
     # Constructor
@@ -207,3 +207,99 @@ class playBackground:
             self.window.blit(self.image, (0, self.image.get_height()*self.i + self.scroll - self.image.get_height()))
             self.i += 1
         self.i = 0
+class Enemy():
+
+    def __init__(self,window,type,sprite_number,difficulty):
+        self.window=window
+        self.type=type
+        self.sprite_number=sprite_number
+        self.difficulty=difficulty
+        self.health=2*self.difficulty
+        if(type=="alien"):
+            self.sprite=pygame.image.load('./Images/Enemy/Aliens/Alien_'+str(self.sprite_number)+'.png')
+        elif(type=="boss"):
+            self.sprite=pygame.image.load('./Images/Enemy/Bosses/Boss_'+str(self.sprite_number)+'.png')
+        elif(type=="structure"):
+            self.sprite=pygame.image.load('./Images/Enemy/Structures/Structure_'+str(self.sprite_number)+'.png')
+        self.coordinates=[]
+
+
+    def spawn_enemy(self,coordinates):
+        #Coordinates are desired center coordinates of the enemy
+        self.coordinates=coordinates
+        self.window.blit(self.sprite,(coordinates[0]-self.sprite.get_width()/2,coordinates[1]-self.sprite.get_height()/2))
+
+    def display_enemy(self):
+        self.window.blit(self.sprite,(self.coordinates[0]-self.sprite.get_width()/2,self.coordinates[1]-self.sprite.get_height()/2))
+
+
+    def move_down(self):
+        self.coordinates[1]+=5
+        self.window.blit(self.sprite,(self.coordinates[0]-self.sprite.get_width()/2,self.coordinates[1]-self.sprite.get_height()/2))
+
+class Wave():
+    def __init__(self,window,num_enemies,difficulty):
+        self.window = window
+        self.num_enemies=num_enemies
+        self.difficulty=difficulty
+        self.enemies=[]
+
+    def spawn_enemies(self):
+        self.enemies=[]
+        if(self.difficulty%10==0 and self.difficulty>=10):
+            num_bosses=1
+        else:
+            num_bosses=0
+        for i in range(self.num_enemies-num_bosses):
+            self.enemies.append(Enemy(self.window,"alien",random.randint(0,3),self.difficulty))
+        if(num_bosses==1):
+            self.enemies.append(Enemy(self.window,"boss",random.randint(0,0),self.difficulty))
+        # For spawning enemies can spawn in different patterns during waves
+        # -upward or downward arrow
+        # -lines
+        # -lines are force in boss waves
+        if(num_bosses==1):
+            #line configuration
+            window_width=self.window.get_width()
+            window_height=self.window.get_height()
+            # Two lines and boss in middle
+            boss_X=window_width/2
+            self.line_config(2)
+            self.enemies[self.num_enemies].spawn_enemy([boss_X,-window_height/2])
+        else:
+            if(self.difficulty==1):
+                self.line_config(self.difficulty)
+            elif(self.difficulty<=5):
+                self.line_config(self.difficulty/2+1)
+            else:
+                self.line_config(self.difficulty/3+1)
+
+    def line_config(self,lines):
+        #line configuration
+        window_width=self.window.get_width()
+        window_height=self.window.get_height()
+        # Two lines and boss in middle
+        first_X=window_width/(lines+1)
+        
+        y_coords=-window_height/2
+        for j in range(lines):
+            y_coords=-window_height/2
+            for i in range(int(self.num_enemies/lines*j),int(self.num_enemies/lines*(j+1))):
+                self.enemies[i].spawn_enemy([first_X*(j+1),y_coords])
+                y_coords+=(window_height/2)/self.num_enemies
+       
+            
+
+    def update_enemies(self):
+        # Handle enemy movement
+        # Handle shooting
+        if(self.enemies[0].coordinates[1]<0):
+            for i in range(self.num_enemies):
+                self.enemies[i].move_down()
+                self.enemies[i].display_enemy()
+        else:
+            for i in range(self.num_enemies):
+                self.enemies[i].display_enemy()
+
+
+
