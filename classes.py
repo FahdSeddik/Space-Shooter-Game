@@ -1,3 +1,5 @@
+import math
+
 import pygame
 import os
 from math import sqrt
@@ -32,7 +34,7 @@ class player:
 
         # self.position is a position list [xPosition, yPosition]
         screenX, screenY = self.window.get_size()
-        self.position = [screenX/2 - self.dimension[0], self.movementBorder[1]]
+        self.position = [screenX/2 - self.dimension[0]/2, self.movementBorder[1]]
         self.center = [self.position[0] + self.dimension[0] / 2, self.position[1] + self.dimension[1] / 2]
 
     def setGunState(self, state):
@@ -66,7 +68,7 @@ class player:
 
     def resetPostion(self):
         screenX, screenY = self.window.get_size()
-        self.position = [screenX/2 - self.dimension[0], self.movementBorder[1]]
+        self.position = [screenX/2 - self.dimension[0]/2, self.movementBorder[1]]
         self.state = self.spriteImages[0]
         self.center = [self.position[0] + self.dimension[0] / 2, self.position[1] + self.dimension[1] / 2]
 
@@ -174,7 +176,7 @@ class mainMenuBGD:
         backgroundFrames = os.listdir(self.bgdFolder)
         numImages = len(backgroundFrames)
         for i in range(numImages):
-            image = pygame.image.load(self.bgdFolder + '/' + str(i) + '.png')
+            image = pygame.image.load(self.bgdFolder + '/' + str(i) + '.bmp')
             self.bgdImages.append(image)
         self.counter = 0
         self.currentFrame = self.bgdImages[0]
@@ -183,3 +185,25 @@ class mainMenuBGD:
     def animate(self):
         self.window.blit(self.bgdImages[self.counter], (0,0))
         self.counter = (self.counter + 1)% len(self.bgdImages)
+
+
+class playBackground:
+    def __init__(self, window, file, scroll):
+        self.window = window
+        self.file = file
+        self.image = pygame.image.load(self.file).convert()
+        self.x, self.y = self.window.get_size()
+        self.tiles = math.ceil(self.y/ self.image.get_height()) + 10
+        self.scroll = scroll
+        self.i = 0
+
+    def incScroll(self):
+        self.scroll += 6
+        if abs(self.scroll) > self.image.get_height():
+            self.scroll = 0
+
+    def animate(self):
+        while self.i < self.tiles:
+            self.window.blit(self.image, (0, self.image.get_height()*self.i + self.scroll - self.image.get_height()))
+            self.i += 1
+        self.i = 0

@@ -186,7 +186,7 @@ def settings_display():
 # **************************
 
 def main():
-    global status_bar_height, current_menu_frame,play_frames
+    global status_bar_height, current_menu_frame,play_frames, screen_X, screen_Y
     Player = player(window, './Images/Player', 100, 0, 0, 3, 'ready', 10, [screen_X, screen_Y - status_bar_height])
     Player.scale(2)
     Player.resetPostion()
@@ -196,7 +196,7 @@ def main():
     run=True
     window_state = "main_menu"
     exp = explosion(window, (200, 500))
-
+    playBGD = playBackground(window, './Images/Playing/0.jpg', 100)
 
     # last cooldown for gun reloading
     Gun.lastCooldown = pygame.time.get_ticks()
@@ -209,7 +209,11 @@ def main():
 
         # BGD
         if window_state != "main_menu":
-            window.fill((0,0,0))
+            if window_state == "play":
+                playBGD.incScroll()
+                playBGD.animate()
+            else:
+                window.fill((0,0,0))
         elif(counter <= 5):
             counter +=1
         else:
