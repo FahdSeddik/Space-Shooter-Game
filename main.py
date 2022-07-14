@@ -234,6 +234,9 @@ def main():
                 # Main Menu Button
                 if (mouse_pos[0]<=settings_mainmenu_X and mouse_pos[1]>=screen_Y-settings_mainmenu_Y):
                     if event.type == pygame.MOUSEBUTTONDOWN:
+                        level=1
+                        Waves=Wave(window,difficulty=level)
+                        Waves.spawn_enemies()
                         Gun.reset()
                         Player.resetPostion()
                         window_state="main_menu"
@@ -245,7 +248,7 @@ def main():
 
 #**************************************************
 # --===Displays===--
-        # Main Menu display
+        # Main Menu displayx
         if window_state=="main_menu":
             mainmenu_display()
         # Play display
