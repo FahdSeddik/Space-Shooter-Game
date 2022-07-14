@@ -9,6 +9,7 @@ import random
 import math
 import time
 import os
+from classes import *
 
 pygame.init()
 
@@ -23,24 +24,6 @@ window_state = "main_menu"
 font = pygame.font.Font('./Fonts/Minecraft.ttf',64)
 
 status_bar_height=font.render("R",True,(255,255,255)).get_height()
-# Loading images
-
-# ****************************
-# ----=======Player=======----
-# ****************************
-player_img = pygame.image.load('./Images/Player/Player_0.png')
-player_X = player_img.get_width()
-player_Y = player_img.get_height()
-player_X*=2
-player_Y*=2
-player_img = pygame.transform.scale(player_img,(player_X,player_Y))
-playerX = screen_X/2 - player_X/2
-playerY = screen_Y - player_Y - 20
-playerX_change = 0
-playerY_change = 0
-player_speed_multiplier = 3
-player_state="still"
-gun_state="ready"
 
 
 # *****************************
@@ -103,31 +86,6 @@ for i in range(num_structures):
     structure_Y.append(structure_img[i].get_height())
 
 
-
-# ****************************
-# -----=======Guns=======-----
-# ****************************
-
-guns_laser_img = pygame.image.load('./Images/Guns/laser.png')
-guns_laser_X = guns_laser_img.get_width()
-guns_laser_Y = guns_laser_img.get_height()
-guns_laser_X/=2
-guns_laser_Y/=2
-guns_laser_img = pygame.transform.scale(guns_laser_img,(guns_laser_X,guns_laser_Y))
-bulletsX=[]
-bulletsY=[]
-
-
-# Set initial positions for bullets to be at player position
-# All max_bullets bullets are pre-loaded into array
-# After each fire bullets are displayed accordingly
-# Max bullets ensures that no performance issues occur
-num_bullets=0
-max_bullets=51
-for i in range(max_bullets):
-    bulletsX.append(playerX+player_X/2-guns_laser_X/2)
-    bulletsY.append(playerY)
-
 # *****************************
 # --===Loading Menu Images===--
 # *****************************
@@ -141,17 +99,17 @@ play_btn_Y = play_btn_img.get_height()
 play_btn_startX = screen_X*0.5-play_btn_X*0.5
 play_btn_startY = screen_Y*0.5-play_btn_Y*0.5
 
-play_frame0 = pygame.image.load('./Images/Menu/Background/0.png')
+play_frame0 = pygame.image.load('./Images/Menu/Background/0.bmp')
 play_frame0 = pygame.transform.scale(play_frame0,(screen_X,screen_Y))
-play_frame1 = pygame.image.load('./Images/Menu/Background/1.png')
+play_frame1 = pygame.image.load('./Images/Menu/Background/1.bmp')
 play_frame1 = pygame.transform.scale(play_frame1,(screen_X,screen_Y))
-play_frame2 = pygame.image.load('./Images/Menu/Background/2.png')
+play_frame2 = pygame.image.load('./Images/Menu/Background/2.bmp')
 play_frame2 = pygame.transform.scale(play_frame2,(screen_X,screen_Y))
-play_frame3 = pygame.image.load('./Images/Menu/Background/3.png')
+play_frame3 = pygame.image.load('./Images/Menu/Background/3.bmp')
 play_frame3 = pygame.transform.scale(play_frame3,(screen_X,screen_Y))
-play_frame4 = pygame.image.load('./Images/Menu/Background/4.png')
+play_frame4 = pygame.image.load('./Images/Menu/Background/4.bmp')
 play_frame4 = pygame.transform.scale(play_frame4,(screen_X,screen_Y))
-play_frame5 = pygame.image.load('./Images/Menu/Background/5.png')
+play_frame5 = pygame.image.load('./Images/Menu/Background/5.bmp')
 play_frame5 = pygame.transform.scale(play_frame5,(screen_X,screen_Y))
 play_frames = [play_frame0,  play_frame1, play_frame2, play_frame3, play_frame4,play_frame5]
 current_menu_frame = 0
@@ -182,14 +140,6 @@ last_cooldown=pygame.time.get_ticks()
 # ----======Functions======----
 # *****************************
 
-# Reset function
-# called when window_state changes from "play" to "main_menu"
-def reset():
-    global playerX,playerY,num_bullets
-    playerX = screen_X/2 - player_X/2
-    playerY = screen_Y - player_Y - status_bar_height
-    num_bullets=0
-
 # Displays gun reloading text and current bullets in window_state "play"
 def display_gun_status(bullets,max_bullets):
     if(bullets+1==max_bullets):
@@ -197,35 +147,6 @@ def display_gun_status(bullets,max_bullets):
     else:
         gun_status=font.render("Gun: "+ str(bullets)+"/"+str(max_bullets-1),True,(255,255,255))
     window.blit(gun_status,(screen_X-gun_status.get_width(),screen_Y-gun_status.get_height()))
-
-# Display Player
-def display_player(x,y):
-    window.blit(player_img,(x,y))
-
-# Move bullets and handle gun states
-def update_bullets():
-    global gun_state,num_bullets,max_bullets,bulletsX,bulletsY
-    global playerX,playerY,last_cooldown
-    if gun_state=="fire":
-        if(num_bullets+1!=max_bullets):
-            gun_state="ready"
-            num_bullets=(num_bullets+1) % max_bullets
-            bulletsX[num_bullets]=playerX
-            bulletsY[num_bullets]=playerY
-            # update last cooldown each fire
-            last_cooldown=pygame.time.get_ticks()
-    # if on cooldown check if 2 seconds (2000 ms) passed
-    if(pygame.time.get_ticks()-last_cooldown >=2000 and not (num_bullets+1!=max_bullets)):
-            gun_state="ready"
-            num_bullets=0
-    # update not fired bullet positions to player
-    for i in range(num_bullets,max_bullets):
-        bulletsX[i]=playerX+player_X/2-guns_laser_X/2
-        bulletsY[i]=playerY
-    # Move fired bullet positions
-    for i in range(num_bullets):
-        bulletsY[i]-=20
-        window.blit(guns_laser_img,(bulletsX[i],bulletsY[i]))
 
 # Displaying images/text only for mainmenu
 def mainmenu_display():
@@ -260,50 +181,41 @@ def settings_display():
     else:
         window.blit(settings_mainmenu_img,(0,screen_Y-settings_mainmenu_Y))
 
-def update_playerpos():
-    global playerX,playerY,playerX_change,playerY_change,player_speed_multiplier
-    global screen_X,screen_Y,player_X,player_Y,status_bar_height
-    # Update player position
-    # with speed multiplier
-    playerX+=playerX_change*player_speed_multiplier
-    playerY+=playerY_change*player_speed_multiplier
-
-    # Check for boundaries
-    if(playerX>=screen_X-player_X):
-        playerX=screen_X-player_X
-    elif playerX<=0:
-        playerX=0
-    if playerY>=screen_Y-player_Y-status_bar_height:
-        playerY=screen_Y-player_Y-status_bar_height
-    elif playerY<=0:
-        playerY=0
-            
-
-
 # **************************
 # ----=======Main=======----
 # **************************
 
 def main():
-    global playerX,playerX_change,num_bullets,max_bullets,status_bar_height
-    global playerY,playerY_change,gun_state, current_menu_frame,play_frames,last_cooldown
+    global status_bar_height, current_menu_frame,play_frames
+    Player = player(window, './Images/Player', 100, 0, 0, 3, 'ready', 10, [screen_X, screen_Y - status_bar_height])
+    Player.scale(2)
+    Player.resetPostion()
+    Gun = gun(window, './Images/Guns', 10, 50, Player, 2000, 20)
+    Gun.scale(0.5)
+    Gun.resetBulletPositions()
     run=True
     window_state = "main_menu"
+    exp = explosion(window, (200, 500))
+
 
     # last cooldown for gun reloading
-    last_cooldown=pygame.time.get_ticks()
+    Gun.lastCooldown = pygame.time.get_ticks()
+    counter = 0
 
     #Game Loop
     while run:
         # Game CLOCK
         clock.tick(60)
-        
+
         # BGD
         if window_state != "main_menu":
             window.fill((0,0,0))
+        elif(counter <= 5):
+            counter +=1
         else:
             window.blit(play_frames[current_menu_frame],(0, 0))
             current_menu_frame = (current_menu_frame+1)%6
+            counter = 0
 
     #**************************************************
     # Looping on events
@@ -322,29 +234,29 @@ def main():
                     window_state="play"
                 # if gun is ready and pressed SPACE change state to fire
                 if event.key == pygame.K_SPACE and window_state=="play":
-                    if gun_state=="ready":
-                        gun_state="fire"
+                    if Player.getGunState() == 'ready':
+                        Player.setGunState('fire')
             
                 # Movement KEYS
                 if event.key == pygame.K_d:
-                    playerX_change=5
+                    Player.xChange = 5
                 elif event.key == pygame.K_a:
-                    playerX_change=-5
+                    Player.xChange = -5
                 if event.key == pygame.K_w:
-                    playerY_change=-5
+                    Player.yChange = -5
                 elif event.key == pygame.K_s:
-                    playerY_change=5
+                    Player.yChange = 5
             
             if event.type == pygame.KEYUP:
                 # Movement KEYS adjustment
-                if event.key == pygame.K_d and playerX_change>=0:
-                    playerX_change=0
-                elif event.key == pygame.K_a and playerX_change<=0:
-                    playerX_change=0
-                if event.key== pygame.K_w and playerY_change<=0:
-                    playerY_change=0
-                elif event.key == pygame.K_s and playerY_change>=0:
-                    playerY_change=0
+                if event.key == pygame.K_d and Player.xChange>=0:
+                    Player.xChange = 0
+                elif event.key == pygame.K_a and Player.xChange<=0:
+                    Player.xChange = 0
+                if event.key== pygame.K_w and Player.yChange<=0:
+                    Player.yChange = 0
+                elif event.key == pygame.K_s and Player.yChange>=0:
+                    Player.yChange = 0
 
         #==========================================
         # --==BUTTON CLICKS ON ANY WINDOW STATE==--
@@ -369,7 +281,8 @@ def main():
                 # Main Menu Button
                 if (mouse_pos[0]<=settings_mainmenu_X and mouse_pos[1]>=screen_Y-settings_mainmenu_Y):
                     if event.type == pygame.MOUSEBUTTONDOWN:
-                        reset()
+                        Gun.reset()
+                        Player.resetPostion()
                         window_state="main_menu"
                 # TODO: Add extra butt
         #==========================================
@@ -384,14 +297,15 @@ def main():
             mainmenu_display()
         # Play display
         elif window_state=="play":
+            exp.animate()
             # Handle player position
-            update_playerpos()
+            Player.updatePlayerPosition()
             # Handle Gun states
-            update_bullets()
+            Gun.updateBullets()
 
             # Display Gun status and player
-            display_gun_status(num_bullets,max_bullets)
-            display_player(playerX,playerY)
+            display_gun_status(Gun.numBullets,Gun.maxBullets)
+            Player.display()
         
         # Settings display
         elif window_state=="settings":
