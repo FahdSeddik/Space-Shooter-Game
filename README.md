@@ -74,6 +74,13 @@ As of v1.0 the game currently has 1 boss type.  <br>
 # Information
 Sprites are from [Open Mega Art](https://opengameart.org).
 
+# Tasks 
+- [ ] Fix issue to for game to work on all resulotions.
+- [ ] Implement player/bullet skins.
+- [ ] Implement different wave formations.
+- [ ] Implement homing bullets.
+- [ ] Add moving enemies. 
+
 # Collaborators 
 - @FahdSeddik  
 - @AbdelrahmanWaelAtef
