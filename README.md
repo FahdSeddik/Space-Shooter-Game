@@ -43,6 +43,8 @@ First, make sure you have the latest version of Python installed on your machine
 pip install pygame
 ```
 After that, you can now execute main.py and have fun! :) <br>
+**Note: game might have image issues on different resolutions.**
+<br>
 # Controls
 
 * Movement Keys:
