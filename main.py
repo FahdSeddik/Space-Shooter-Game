@@ -126,7 +126,6 @@ def settings_display():
 def enemy_collisions(enemies,player_bullets,bullet_dmg):
     # using pygame's collisions
 
-    global window
     for enemy in enemies:
         if not(enemy.isDead()):
             rect=enemy.sprite.get_rect()

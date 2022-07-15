@@ -131,7 +131,7 @@ class gun:
                 continue
             else:
                 self.bullets[j].y = self.bullets[j].y - self.bulletSpeed
-                self.window.blit(bullet[j].image, (self.bullets[j].x, self.bullets[j].y))
+                self.window.blit(self.bullets[j].image, (self.bullets[j].x, self.bullets[j].y))
 
     def reset(self):
         self.numBullets = 0
@@ -245,9 +245,9 @@ class Enemy():
         self.coordinates=coordinates
         self.bullet_coords=[coordinates[0]-self.bullet.get_width()/2,coordinates[1]+self.sprite.get_height()/2-self.bullet.get_height()/2]
         # Collision box for enemy bullet
-        #self.bullet_CB = CollisionBox(self.bullet.get_width(),self.bullet.get_height(),self.bullet_coords[0]+self.bullet.get_width()/2,self.bullet_coords[1]+self.bullet.get_height()/2)
+        self.bullet_CB = CollisionBox(self.bullet.get_width(),self.bullet.get_height(),self.bullet_coords[0]+self.bullet.get_width()/2,self.bullet_coords[1]+self.bullet.get_height()/2)
         # Collision box for enemy
-        #self.CB = CollisionBox(self.sprite.get_width(),self.sprite.get_height(),coordinates[0],coordinates[1])
+        self.CB = CollisionBox(self.sprite.get_width(),self.sprite.get_height(),coordinates[0],coordinates[1])
         self.window.blit(self.sprite,(coordinates[0]-self.sprite.get_width()/2,coordinates[1]-self.sprite.get_height()/2))
         self.exp=explosion(self.window,self.coordinates)
 
@@ -268,8 +268,8 @@ class Enemy():
             self.exp=explosion(self.window,self.coordinates)
             self.hit=False
         self.exp.animate()
-        #self.bullet_CB.update_coords(self.bullet_coords[0],self.bullet_coords[1])
-        #self.CB.update_coords(self.coordinates[0],self.coordinates[1])
+        self.bullet_CB.update_coords(self.bullet_coords[0],self.bullet_coords[1])
+        self.CB.update_coords(self.coordinates[0],self.coordinates[1])
         
 
     def attack(self):
@@ -278,6 +278,8 @@ class Enemy():
     def isDead(self):
         if (self.health<=0):
             return True
+        else:
+            return False
 
     def move_down(self):
         self.coordinates[1]+=5
@@ -330,11 +332,11 @@ class Wave():
             self.line_config(int(self.num_enemies/5))
             
     def isDead(self):
+        result=self.enemies[0].isDead()
         for enemy in self.enemies:
-            if(enemy.isDead()):
-                return True
+            result=result and enemy.isDead()
 
-        return False
+        return result
 
     def line_config(self,lines):
         #line configuration
@@ -376,24 +378,24 @@ class Wave():
                 
 
 
-# class CollisionBox():
-#     def __init__(self,width,height,x,y):
-#         self.width=width
-#         self.height=height
+class CollisionBox():
+    def __init__(self,width,height,x,y):
+        self.width=width
+        self.height=height
 
-#         # X and Y Coords are the center of the box
-#         self.x=x
-#         self.y=y
+        # X and Y Coords are the center of the box
+        self.x=x
+        self.y=y
     
-#     def update_coords(self,x,y):
-#         self.x=x
-#         self.y=y
+    def update_coords(self,x,y):
+        self.x=x
+        self.y=y
 
-#     def isCollide(self,box):
-#         # given another collision box to check if collided with it
-#         distance=sqrt((self.x-box.x)**2+(self.y-box.y)**2)
+    def isCollide(self,box):
+        # given another collision box to check if collided with it
+        distance=sqrt((self.x-box.x)**2+(self.y-box.y)**2)
         
-#         if distance<=self.width/2:
-#             return True
-#         else:
-#             return False
+        if distance<=self.width/2:
+            return True
+        else:
+            return False
