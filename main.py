@@ -128,12 +128,11 @@ def enemy_collisions(enemies,player_bullets,bullet_dmg):
 
     for enemy in enemies:
         if not(enemy.isDead()):
-            rect=enemy.sprite.get_rect()
             for bullet in player_bullets:
-                if rect.colliderect(bullet.image.get_rect()):
-                    enemy.health-=bullet_dmg
+                if enemy.CB.isCollide(bullet.collisionBox):
                     enemy.hit=True
                     bullet.hit=True
+                    enemy.health-=bullet_dmg
 
 
 def player_collisions(player,enemies,bullet_dmg):
