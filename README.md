@@ -8,7 +8,7 @@
 
 # Space-Shooter-Game "AstroZone"
 
-This is a retro-style 2D space-shooter game written in Python using Pygame library.  
+This is a retro-style 2D space-shooter game written in Python (OOP) using Pygame library.  
 <br>
 ## Game Features as of v1.0:
   * Increasing Difficulty each wave
