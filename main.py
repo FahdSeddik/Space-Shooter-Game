@@ -72,7 +72,13 @@ settings_mainmenu_img_HL = pygame.image.load('./Images/Settings/MainMenu_HL.png'
 clock = pygame.time.Clock()
 last_cooldown=pygame.time.get_ticks()
 
-
+# Highscore System
+lastLevel = 0
+with open('highestLevel.txt', 'r') as file:
+    highestLevel = file.read()
+    equalSign = highestLevel.find('=')
+    highestLevel = int(highestLevel[equalSign+1:])
+highestScoreLabel = font.render("Highest Level = " + str(highestLevel),True,(255,255,255))
 # *****************************
 # ----======Functions======----
 # *****************************
@@ -96,6 +102,7 @@ def mainmenu_display():
     # Check for Hovering over button
     # Display highlighted (HL) btn
     window.blit(name_img,(screen_X/2-name_img.get_width()/2,20))
+    window.blit(highestScoreLabel, (screen_X / 2 - highestScoreLabel.get_width() / 2, screen_Y - highestScoreLabel.get_height()))
     if (mouse_pos[0]>=play_btn_startX and mouse_pos[0]<=play_btn_startX+play_btn_X and mouse_pos[1]>=play_btn_startY and mouse_pos[1]<=play_btn_startY+play_btn_Y):
         window.blit(play_btn_img_HL,(play_btn_startX,play_btn_startY))
     else:
@@ -155,6 +162,17 @@ def display_health(health,maxhealth):
         color=(0, 255, 0)
     hp=font.render("HP: "+str(health)+"/"+str(maxhealth),True,color)
     window.blit(hp,(screen_X/2-hp.get_width()/2,screen_Y-hp.get_height()))
+
+def updateLastLevel(player, level):
+    global lastLevel
+    if player.health <= 100:
+        lastLevel = level
+
+def updateHighestLevel():
+    global lastLevel
+    if lastLevel > highestLevel:
+        with open('./highestLevel.txt', 'w') as file:
+            file.write('highestLevel = ' + str(lastLevel))
 
 # **************************
 # ----=======Main=======----
@@ -298,6 +316,7 @@ def main():
             display_wave(level)
             Player.display()
             Waves.update_enemies()
+            updateLastLevel(Player, level)
             if Waves.isDead() or next_wave:
                 next_wave=False
                 level+=1
@@ -317,3 +336,4 @@ def main():
 
 # Call Main
 main()
+updateHighestLevel()
