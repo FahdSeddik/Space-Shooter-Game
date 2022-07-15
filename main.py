@@ -129,9 +129,9 @@ def enemy_collisions(enemies,player_bullets,bullet_dmg):
     global window
     for enemy in enemies:
         if not(enemy.isDead()):
-            rect=enemy.get_rect()
+            rect=enemy.sprite.get_rect()
             for bullet in player_bullets:
-                if rect.colliderect(bullet):
+                if rect.colliderect(bullet.image.get_rect()):
                     enemy.health-=bullet_dmg
                     enemy.hit=True
                     bullet.hit=True
@@ -293,6 +293,8 @@ def main():
                 level+=1
                 Waves=Wave(window,difficulty=level)
                 Waves.spawn_enemies()
+            enemy_collisions(Waves.enemies, Gun.bullets, Player.firePower)
+
 
         # Settings display
         elif window_state=="settings":

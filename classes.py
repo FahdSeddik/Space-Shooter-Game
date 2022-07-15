@@ -16,7 +16,7 @@ class player:
         self.speed = speed
         self.gunState = gunState
         self.firePower = firePower
-
+        self.hit = False
         #self.movementBorder takes a border list [max_Xcooridinate, maxYcoordinate]
         self.movementBorder = movementBorder
         self.spriteImages = []
@@ -87,10 +87,11 @@ class player:
 
 
 class bullet:
-    def __init__(self, x, y):
+    def __init__(self, x, y, image):
         self.x = x
         self.y = y
-
+        self.hit = False
+        self.image = image
 
 class gun:
     def __init__(self, window, spriteFolder, damage, maxBullets, player, reloadTime, bulletSpeed):
@@ -109,7 +110,7 @@ class gun:
         self.reloadTime = reloadTime
         self.bulletSpeed = bulletSpeed
         for i in range(self.maxBullets):
-            self.bullets.append(bullet(self.player.position[0] + self.player.dimension[0]/2 -self.dimension[0]/2, self.player.position[1]))
+            self.bullets.append(bullet(self.player.position[0] + self.player.dimension[0]/2 -self.dimension[0]/2, self.player.position[1], self.state))
 
     def updateBullets(self):
         if self.player.getGunState() == 'fire':
@@ -126,8 +127,11 @@ class gun:
             self.bullets[i].x = self.player.position[0] + self.player.dimension[0] / 2 - self.dimension[0] / 2
             self.bullets[i].y = self.player.position[1]
         for j in range(self.numBullets):
-            self.bullets[j].y = self.bullets[j].y - self.bulletSpeed
-            self.window.blit(self.state, (self.bullets[j].x, self.bullets[j].y))
+            if self.bullets[j].hit:
+                continue
+            else:
+                self.bullets[j].y = self.bullets[j].y - self.bulletSpeed
+                self.window.blit(bullet[j].image, (self.bullets[j].x, self.bullets[j].y))
 
     def reset(self):
         self.numBullets = 0
@@ -135,7 +139,7 @@ class gun:
     def resetBulletPositions(self):
         self.bullets = []
         for i in range(self.maxBullets):
-            self.bullets.append(bullet(self.player.position[0] + self.player.dimension[0]/2 -self.dimension[0]/2, self.player.position[1]))
+            self.bullets.append(bullet(self.player.position[0] + self.player.dimension[0]/2 -self.dimension[0]/2, self.player.position[1], self.state))
 
     def scale(self, multiplyer):
         self.dimension = [self.dimension[0] * multiplyer, self.dimension[1]* multiplyer]
