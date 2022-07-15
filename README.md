@@ -35,7 +35,7 @@ Game over menu.
 
 ![image](https://user-images.githubusercontent.com/62207434/179250185-7c7cac6c-6d0f-4275-bf68-6e0ca9dbdffc.png)
 
-# Install 
+# Installation
 
 Currently game does not have .exe version yet. Therefore, you would have to make sure you have all the dependecies installed before you can run the game. <br>
 First, make sure you have the latest version of Python installed on your machine. Second, run this command in your terminal
