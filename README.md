@@ -71,6 +71,9 @@ As of v1.0 the game currently has 1 boss type.  <br>
 
 ![Boss_0](https://user-images.githubusercontent.com/62207434/179248502-8151ad56-b5cb-4678-9af5-5cc9ea01d9ba.png)
 
+# Information
+Sprites are from [Open Mega Art](https://opengameart.org).
+
 # Collaborators 
 - @FahdSeddik  
 - @AbdelrahmanWaelAtef
