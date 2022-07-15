@@ -15,7 +15,9 @@ screen_X, screen_Y = window.get_size()
 # main_menu -- for main menu
 # play -- for play
 window_state = "main_menu"         
-
+icon=pygame.image.load('./Images/icon.png')
+pygame.display.set_icon(icon)
+pygame.display.set_caption("AstroZone - by Fahd Seddik and Abdelrahman Wael")
 # Font
 font = pygame.font.Font('./Fonts/Minecraft.ttf',64)
 
