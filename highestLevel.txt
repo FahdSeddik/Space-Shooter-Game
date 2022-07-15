@@ -1,1 +1,1 @@
-highestLevel = 10
+highestLevel = 0
