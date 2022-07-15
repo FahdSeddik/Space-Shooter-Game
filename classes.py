@@ -17,10 +17,10 @@ class player:
         self.gunState = gunState
         self.firePower = firePower
         self.hit = False
+        self.maxHealth=health
         #self.movementBorder takes a border list [max_Xcooridinate, maxYcoordinate]
         self.movementBorder = movementBorder
         self.spriteImages = []
-
 
         # Load all the sprite images in the sprite folder into spriteImages list
         playerSprites = os.listdir(spriteFolder)
@@ -36,7 +36,9 @@ class player:
         screenX, screenY = self.window.get_size()
         self.position = [screenX/2 - self.dimension[0]/2, self.movementBorder[1]]
         self.center = [self.position[0] + self.dimension[0] / 2, self.position[1] + self.dimension[1] / 2]
-
+        self.CB= CollisionBox(self.dimension[0],self.dimension[1],self.position[0]+self.dimension[0]/2,self.position[1]+self.dimension[1]/2)
+        self.exp=explosion(self.window,[-500,-500])
+        self.start=False
 
 
     def setGunState(self, state):
@@ -64,8 +66,15 @@ class player:
             self.position[1] = 0
 
         self.center = [self.position[0] + self.dimension[0]/2, self.position[1] + self.dimension[1]/2]
+        self.CB.update_coords(self.center[0],self.center[1])
 
     def display(self):
+        if self.hit:
+            self.exp=explosion(self.window,[self.position[0]-20,self.position[1]-20])
+            self.hit=False
+        self.exp.animate()
+        if self.start:
+            self.exp.follow([self.position[0]-20,self.position[1]-20])
         self.window.blit(self.state, (self.position[0], self.position[1]))
 
     def resetPostion(self):
@@ -94,6 +103,7 @@ class bullet:
         self.image = image
         self.width = self.image.get_width()
         self.height = self.image.get_height()
+        self.shot=False
         self.collisionBox = CollisionBox(self.width, self.height, self.x, self.y)
 
 class gun:
@@ -122,11 +132,13 @@ class gun:
                 self.numBullets = (self.numBullets + 1)% self.maxBullets
                 self.bullets[self.numBullets].x = self.player.position[0]
                 self.bullets[self.numBullets].y = self.player.position[1]
+                self.bullets[self.numBullets].shot=True
                 self.lastCooldown = pygame.time.get_ticks()
         if (pygame.time.get_ticks() - self.lastCooldown >= self.reloadTime) and not (self.numBullets + 1 != self.maxBullets):
                 self.player.setGunState('ready')
                 self.numBullets = 0
                 for bullet in self.bullets:
+                    bullet.shot= False
                     bullet.hit = False
         for i in range(self.numBullets, self.maxBullets):
             self.bullets[i].x = self.player.position[0] + self.player.dimension[0] / 2 - self.dimension[0] / 2
@@ -173,6 +185,9 @@ class explosion:
 
     def __del__(self):
         pass
+    def follow(self,position):
+        self.x=position[0]
+        self.y=position[1]
 
     def animate(self):
         if self.counter == len(self.spriteImages):
@@ -228,19 +243,29 @@ class Enemy():
         self.type=type
         self.sprite_number=sprite_number
         self.difficulty=difficulty
-        self.health=2*self.difficulty
+        self.health=5*self.difficulty
         self.attacking=False
         self.hit=False
         self.bullet_hit=False
+        self.finished=False
         if(type=="alien"):
+            self.dmg=0.5*self.difficulty
+            if self.dmg>20:
+                self.dmg=20
             self.bullet=pygame.image.load('./Images/Enemy/Bullets/Laser.png')
             
             self.sprite=pygame.image.load('./Images/Enemy/Aliens/Alien_'+str(self.sprite_number)+'.png')
         elif(type=="boss"):
-            self.health=15*self.difficulty
+            self.health=30*self.difficulty
+            self.dmg=self.difficulty
+            if self.dmg>40:
+                self.dmg=40
             self.bullet=pygame.image.load('./Images/Enemy/Bullets/Laser_beam.png')
             self.sprite=pygame.image.load('./Images/Enemy/Bosses/Boss_'+str(self.sprite_number)+'.png')
         elif(type=="structure"):
+            self.dmg=0.5*self.difficulty
+            if self.dmg>20:
+                self.dmg=20
             self.bullet=pygame.image.load('./Images/Enemy/Bullets/Laser.png')
 
             self.sprite=pygame.image.load('./Images/Enemy/Structures/Structure_'+str(self.sprite_number)+'.png')
@@ -271,11 +296,8 @@ class Enemy():
             self.bullet_hit=False
         else:
             self.bullet_coords=[self.coordinates[0]-self.bullet.get_width()/2,self.coordinates[1]+self.sprite.get_height()/2-self.bullet.get_height()/2]
-        if self.hit:
-            self.exp=explosion(self.window,self.coordinates)
-            self.hit=False
-        self.exp.animate()
-        self.bullet_CB.update_coords(self.bullet_coords[0],self.bullet_coords[1])
+        
+        self.bullet_CB.update_coords(self.bullet_coords[0]+self.bullet.get_width()/2,self.bullet_coords[1]+self.bullet.get_height()/2)
         self.CB.update_coords(self.coordinates[0],self.coordinates[1])
         
 
@@ -305,6 +327,8 @@ class Wave():
             
         self.difficulty=difficulty
         self.enemies=[]
+        self.exp=[]
+        self.ready=False
 
     def spawn_enemies(self):
         self.enemies=[]
@@ -342,7 +366,7 @@ class Wave():
         result=self.enemies[0].isDead()
         for enemy in self.enemies:
             result=result and enemy.isDead()
-
+        
         return result
 
     def line_config(self,lines):
@@ -376,12 +400,30 @@ class Wave():
                 enemy.move_down()
                 enemy.display_enemy()
         else:
+            self.ready=True
             for enemy in self.enemies:
                 if not(enemy.isDead()):
                     enemy.display_enemy()
                     rint=random.randint(0,1000)
                     if(rint<=5):
+                        enemy.bullet_hit=False
                         enemy.attack()
+                    if enemy.hit:
+                        if enemy.type=="boss":
+                            self.exp.append(explosion(self.window,[enemy.coordinates[0]-75,enemy.coordinates[1]-75]))
+                        else:
+                            self.exp.append(explosion(self.window,[enemy.coordinates[0]-enemy.sprite.get_width()/2-40,enemy.coordinates[1]-enemy.sprite.get_height()/2-40]))
+                        enemy.hit=False
+                elif not(enemy.finished):
+                    if enemy.type=="boss":
+                        self.exp.append(explosion(self.window,[enemy.coordinates[0]-75,enemy.coordinates[1]-75]))
+                    else:
+                        self.exp.append(explosion(self.window,[enemy.coordinates[0]-enemy.sprite.get_width()/2-40,enemy.coordinates[1]-enemy.sprite.get_height()/2-40]))
+                    enemy.finished=True
+                    
+            for explo in self.exp:
+                explo.animate()
+
                 
 
 
@@ -402,7 +444,7 @@ class CollisionBox():
         # given another collision box to check if collided with it
         distance=sqrt((self.x-box.x)**2+(self.y-box.y)**2)
         
-        if distance<=self.width/2:
+        if distance<=self.width/2 or distance<=self.height/2 or distance<=box.width/2 or distance<=self.height/4 :
             return True
         else:
             return False

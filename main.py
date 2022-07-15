@@ -4,9 +4,7 @@ except:
     import pip
     pip.main(['install', 'pygame'])
     import pygame
-import math
-import time
-import os
+
 from classes import *
 
 pygame.init()
@@ -83,7 +81,7 @@ def display_gun_status(bullets,max_bullets):
     if(bullets+1==max_bullets):
         gun_status=font.render("Reloading..",True,(255,255,255))
     else:
-        gun_status=font.render("Gun: "+ str(bullets)+"/"+str(max_bullets-1),True,(255,255,255))
+        gun_status=font.render("Gun: "+ str(max_bullets-1-bullets)+"/"+str(max_bullets-1),True,(255,255,255))
     window.blit(gun_status,(screen_X-gun_status.get_width(),screen_Y-gun_status.get_height()))
 
 def display_wave(level):
@@ -127,24 +125,35 @@ def enemy_collisions(enemies,player_bullets,bullet_dmg):
     # using pygame's collisions
 
     for enemy in enemies:
-        if not(enemy.isDead()):
+        if not(enemy.isDead()) and not(enemy.hit):
             for bullet in player_bullets:
-                if enemy.CB.isCollide(bullet.collisionBox):
+                if enemy.CB.isCollide(bullet.collisionBox) and not(bullet.hit) and bullet.shot:
                     enemy.hit=True
                     bullet.hit=True
                     enemy.health-=bullet_dmg
 
 
-def player_collisions(player,enemies,bullet_dmg):
+def player_collisions(player,enemies):
     # using pygame's collisions
 
     for enemy in enemies:
-        if not(enemy.isDead()):
-            rect=enemy.bullet.get_rect()
-            if rect.colliderect(player):
-                player.health-=bullet_dmg
+        if not(enemy.isDead()) and not(enemy.bullet_hit):
+            if player.CB.isCollide(enemy.bullet_CB) and not(player.hit):
                 player.hit=True
                 enemy.bullet_hit=True
+                player.health-=enemy.dmg
+
+def display_health(health,maxhealth):
+    global screen_X,screen_Y
+    if health<=maxhealth*0.5:
+        color=(255, 248, 10)
+    if health<=maxhealth*0.2:
+        color=(255,0,0)
+    if health>maxhealth*0.5:
+        color=(0, 255, 0)
+    hp=font.render("HP: "+str(health)+"/"+str(maxhealth),True,color)
+    window.blit(hp,(screen_X/2-hp.get_width()/2,screen_Y-hp.get_height()))
+
 # **************************
 # ----=======Main=======----
 # **************************
@@ -161,7 +170,6 @@ def main():
     window_state = "main_menu"
     
     playBGD = playBackground(window, './Images/Playing/0.jpg', 100)
-
 
     level=1
     Waves=Wave(window,difficulty=level)
@@ -282,6 +290,7 @@ def main():
             Gun.updateBullets()
 
             # Display Gun status and player
+            display_health(Player.health,Player.maxHealth)
             display_gun_status(Gun.numBullets,Gun.maxBullets)
             display_wave(level)
             Player.display()
@@ -291,9 +300,10 @@ def main():
                 level+=1
                 Waves=Wave(window,difficulty=level)
                 Waves.spawn_enemies()
-            enemy_collisions(Waves.enemies, Gun.bullets, Player.firePower)
-
-
+            if Waves.ready:
+                Player.start=True
+                enemy_collisions(Waves.enemies, Gun.bullets, Player.firePower)
+                player_collisions(Player,Waves.enemies)
         # Settings display
         elif window_state=="settings":
             settings_display()
