@@ -6,7 +6,7 @@
 
 <hr>
 
-# Space-Shooter-Game
+# Space-Shooter-Game "AstroZone"
 
 This is a retro-style 2D space-shooter game written in Python using Pygame library.  
 <br>
