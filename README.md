@@ -76,11 +76,14 @@ Sprites are from [Open Mega Art](https://opengameart.org).
 - [ ] Fix issue for game to work on all resolutions.
 - [ ] Add sound effects for shooting/explosions.
 - [ ] Add background music.
-- [ ] Implement player/bullet skins.
+- [ ] Unlockable player/bullet skins.
 - [ ] Implement different wave formations.
 - [ ] Implement homing bullets.
 - [ ] Add moving enemies. 
-
+- [ ] Achievement system.
+- [ ] Improve boss animations.
+- [ ] Power ups.
+- [ ] Player gun variations and gun upgrades.
 # Contributors 
 - @FahdSeddik  
 - @AbdelrahmanWaelAtef
