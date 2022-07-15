@@ -85,7 +85,7 @@ Sprites are from [Open Mega Art](https://opengameart.org).
 - [ ] Implement homing bullets.
 - [ ] Add moving enemies. 
 
-# Collaborators 
+# Contributors 
 - @FahdSeddik  
 - @AbdelrahmanWaelAtef
 
