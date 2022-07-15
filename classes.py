@@ -92,6 +92,9 @@ class bullet:
         self.y = y
         self.hit = False
         self.image = image
+        self.width = self.image.get_width()
+        self.height = self.image.get_height()
+        self.collisionBox = CollisionBox(self.width, self.height, self.x, self.y)
 
 class gun:
     def __init__(self, window, spriteFolder, damage, maxBullets, player, reloadTime, bulletSpeed):
@@ -123,14 +126,18 @@ class gun:
         if (pygame.time.get_ticks() - self.lastCooldown >= self.reloadTime) and not (self.numBullets + 1 != self.maxBullets):
                 self.player.setGunState('ready')
                 self.numBullets = 0
+                for bullet in self.bullets:
+                    bullet.hit = False
         for i in range(self.numBullets, self.maxBullets):
             self.bullets[i].x = self.player.position[0] + self.player.dimension[0] / 2 - self.dimension[0] / 2
             self.bullets[i].y = self.player.position[1]
+            self.bullets[i].collisionBox.update_coords(self.bullets[i].x, self.bullets[i].y)
         for j in range(self.numBullets):
             if self.bullets[j].hit:
                 continue
             else:
                 self.bullets[j].y = self.bullets[j].y - self.bulletSpeed
+                self.bullets[j].collisionBox.update_coords(self.bullets[j].x, self.bullets[j].y)
                 self.window.blit(self.bullets[j].image, (self.bullets[j].x, self.bullets[j].y))
 
     def reset(self):
