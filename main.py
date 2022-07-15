@@ -123,6 +123,30 @@ def settings_display():
     else:
         window.blit(settings_mainmenu_img,(0,screen_Y-settings_mainmenu_Y))
 
+def enemy_collisions(enemies,player_bullets,bullet_dmg):
+    # using pygame's collisions
+
+    global window
+    for enemy in enemies:
+        if not(enemy.isDead()):
+            rect=enemy.get_rect()
+            for bullet in player_bullets:
+                if rect.colliderect(bullet):
+                    enemy.health-=bullet_dmg
+                    enemy.hit=True
+                    bullet.hit=True
+
+
+def player_collisions(player,enemies,bullet_dmg):
+    # using pygame's collisions
+
+    for enemy in enemies:
+        if not(enemy.isDead()):
+            rect=enemy.bullet.get_rect()
+            if rect.colliderect(player):
+                player.health-=bullet_dmg
+                player.hit=True
+                enemy.bullet_hit=True
 # **************************
 # ----=======Main=======----
 # **************************

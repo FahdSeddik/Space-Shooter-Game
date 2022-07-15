@@ -37,6 +37,8 @@ class player:
         self.position = [screenX/2 - self.dimension[0]/2, self.movementBorder[1]]
         self.center = [self.position[0] + self.dimension[0] / 2, self.position[1] + self.dimension[1] / 2]
 
+
+
     def setGunState(self, state):
         self.gunState = state
 
@@ -207,6 +209,7 @@ class playBackground:
             self.window.blit(self.image, (0, self.image.get_height()*self.i + self.scroll - self.image.get_height()))
             self.i += 1
         self.i = 0
+
 class Enemy():
 
     def __init__(self,window,type,sprite_number,difficulty):
@@ -216,6 +219,8 @@ class Enemy():
         self.difficulty=difficulty
         self.health=2*self.difficulty
         self.attacking=False
+        self.hit=False
+        self.bullet_hit=False
         if(type=="alien"):
             self.bullet=pygame.image.load('./Images/Enemy/Bullets/Laser.png')
             
@@ -236,23 +241,31 @@ class Enemy():
         self.coordinates=coordinates
         self.bullet_coords=[coordinates[0]-self.bullet.get_width()/2,coordinates[1]+self.sprite.get_height()/2]
         # Collision box for enemy bullet
-        self.bullet_CB = CollisionBox(self.bullet.get_width(),self.bullet.get_height(),self.bullet_coords[0]+self.bullet.get_width()/2,self.bullet_coords[1]+self.bullet.get_height()/2)
+        #self.bullet_CB = CollisionBox(self.bullet.get_width(),self.bullet.get_height(),self.bullet_coords[0]+self.bullet.get_width()/2,self.bullet_coords[1]+self.bullet.get_height()/2)
         # Collision box for enemy
-        self.CB = CollisionBox(self.sprite.get_width(),self.sprite.get_height(),coordinates[0],coordinates[1])
+        #self.CB = CollisionBox(self.sprite.get_width(),self.sprite.get_height(),coordinates[0],coordinates[1])
         self.window.blit(self.sprite,(coordinates[0]-self.sprite.get_width()/2,coordinates[1]-self.sprite.get_height()/2))
+        self.exp=explosion(self.window,self.coordinates)
 
     def display_enemy(self):
         self.window.blit(self.sprite,(self.coordinates[0]-self.sprite.get_width()/2,self.coordinates[1]-self.sprite.get_height()/2))
-        if self.attacking:
+        if self.attacking and not(self.bullet_hit):
             if(self.bullet_coords[1]<=self.window.get_height()):
                 self.window.blit(self.bullet,(self.bullet_coords[0],self.bullet_coords[1]))
                 self.bullet_coords[1]+=3
             else:
                 self.attacking=False
+        elif self.attacking and self.bullet_hit:
+            self.attacking=False
+            self.bullet_hit=False
         else:
             self.bullet_coords=[self.coordinates[0]-self.bullet.get_width()/2,self.coordinates[1]+self.sprite.get_height()/2]
-        self.bullet_CB.update_coords(self.bullet_coords[0],self.bullet_coords[1])
-        self.CB.update_coords(self.coordinates[0],self.coordinates[1])
+        if self.hit:
+            self.exp=explosion(self.window,self.coordinates)
+            self.hit=False
+        self.exp.animate()
+        #self.bullet_CB.update_coords(self.bullet_coords[0],self.bullet_coords[1])
+        #self.CB.update_coords(self.coordinates[0],self.coordinates[1])
         
 
     def attack(self):
@@ -340,7 +353,7 @@ class Wave():
                     self.enemies[i].spawn_enemy([first_X*(j+1),y_coords])
                     y_coords+=128
        
-            
+    
 
     def update_enemies(self):
         # Handle enemy movement
@@ -351,30 +364,32 @@ class Wave():
                 enemy.display_enemy()
         else:
             for enemy in self.enemies:
-                enemy.display_enemy()
-                rint=random.randint(0,1000)
-                if(rint<=5):
-                    enemy.attack()
+                if not(enemy.isDead()):
+                    enemy.display_enemy()
+                    rint=random.randint(0,1000)
+                    if(rint<=5):
+                        enemy.attack()
+                
 
 
-class CollisionBox():
-    def __init__(self,width,height,x,y):
-        self.width=width
-        self.height=height
+# class CollisionBox():
+#     def __init__(self,width,height,x,y):
+#         self.width=width
+#         self.height=height
 
-        # X and Y Coords are the center of the box
-        self.x=x
-        self.y=y
+#         # X and Y Coords are the center of the box
+#         self.x=x
+#         self.y=y
     
-    def update_coords(self,x,y):
-        self.x=x
-        self.y=y
+#     def update_coords(self,x,y):
+#         self.x=x
+#         self.y=y
 
-    def isCollide(self,box):
-        # given another collision box to check if collided with it
-        distance=sqrt((self.x-box.x)**2+(self.y-box.y)**2)
+#     def isCollide(self,box):
+#         # given another collision box to check if collided with it
+#         distance=sqrt((self.x-box.x)**2+(self.y-box.y)**2)
         
-        if distance<=self.width/2:
-            return True
-        else:
-            return False
+#         if distance<=self.width/2:
+#             return True
+#         else:
+#             return False
