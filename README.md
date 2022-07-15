@@ -10,7 +10,7 @@
 
 This is a retro-style 2D space-shooter game written in Python (OOP) using Pygame library. Source code and .exe file are provided in the repo.
 <br>
-## Game Features as of v1.0:
+## Game Features as of v1.1:
   * Increasing Difficulty each wave
     - More enemies spawn
     - Enemies are harder to kill
@@ -51,7 +51,7 @@ Download code from github as a .zip file. Unzip file into a folder. Launch "Astr
   - Esc
 
 # Enemies 
-As of v1.0 the game currently has 4 different enemies and 1 structure.  
+As of v1.1 the game currently has 4 different enemies and 1 structure.  
 ### Alien Spaceships  
 ![Alien_0](https://user-images.githubusercontent.com/62207434/179246013-89c80955-10f6-4ee6-975a-2bd333f1ceb7.png)
 ![Alien_1](https://user-images.githubusercontent.com/62207434/179246018-bd6a43cf-50fa-4c0c-a909-350a47f17bb8.png)
@@ -64,7 +64,7 @@ As of v1.0 the game currently has 4 different enemies and 1 structure.
 <br>
 
 # Bosses  
-As of v1.0 the game currently has 1 boss type.  <br>
+As of v1.1 the game currently has 1 boss type.  <br>
 <br>
 
 ![Boss_0](https://user-images.githubusercontent.com/62207434/179248502-8151ad56-b5cb-4678-9af5-5cc9ea01d9ba.png)
