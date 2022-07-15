@@ -37,12 +37,8 @@ Game over menu.
 
 # Installation
 
-Currently game does not have .exe version yet. Therefore, you would have to make sure you have all the dependencies installed before you can run the game. <br>
-First, make sure you have the latest version of Python installed on your machine. Second, run this command in your terminal
-```bash
-pip install pygame
-```
-After that, you can now execute main.py and have fun! :) <br>
+Download code from github as a .zip file. Unzip file into a folder. Launch "AstroZone.exe" and enjoy! :)   <br>
+
 **Note: game might have image issues on different resolutions.**
 <br>
 # Controls
