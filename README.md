@@ -73,7 +73,7 @@ As of v1.1 the game currently has 1 boss type.  <br>
 Sprites are from [Open Mega Art](https://opengameart.org).
 
 # Tasks 
-- [ ] Fix issue for game to work on all resolutions.
+- [x] <s>Fix issue for game to work on all resolutions.</s>
 - [ ] Add sound effects for shooting/explosions.
 - [ ] Add background music.
 - [ ] Unlockable player/bullet skins.
