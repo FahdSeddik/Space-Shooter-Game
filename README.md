@@ -76,6 +76,8 @@ Sprites are from [Open Mega Art](https://opengameart.org).
 
 # Tasks 
 - [ ] Fix issue for game to work on all resulotions.
+- [ ] Add sound effects for shooting/explosions.
+- [ ] Add background music.
 - [ ] Implement player/bullet skins.
 - [ ] Implement different wave formations.
 - [ ] Implement homing bullets.
