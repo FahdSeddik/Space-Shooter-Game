@@ -27,7 +27,8 @@ status_bar_height=font.render("R",True,(255,255,255)).get_height()
 # *****************************
 
 # Main Menu
-#name_img = pygame.image.load('GameName.png')
+name_img = pygame.image.load('./Images/Menu/GameName.png')
+name_img=pygame.transform.scale(name_img,(name_img.get_width()*2,name_img.get_height()*2))
 play_btn_img = pygame.image.load('./Images/Menu/PlayBTN.png')
 play_btn_img_HL = pygame.image.load('./Images/Menu/PlayBTN_HL.png')
 play_btn_X = play_btn_img.get_width()
@@ -90,10 +91,11 @@ def display_wave(level):
 
 # Displaying images/text only for mainmenu
 def mainmenu_display():
-    global play_btn_img,play_btn_startX,play_btn_img_HL,play_btn_X,play_btn_startY,play_btn_Y
+    global play_btn_img,play_btn_startX,play_btn_img_HL,play_btn_X,play_btn_startY,play_btn_Y,name_img
     mouse_pos = pygame.mouse.get_pos()
     # Check for Hovering over button
     # Display highlighted (HL) btn
+    window.blit(name_img,(screen_X/2-name_img.get_width()/2,20))
     if (mouse_pos[0]>=play_btn_startX and mouse_pos[0]<=play_btn_startX+play_btn_X and mouse_pos[1]>=play_btn_startY and mouse_pos[1]<=play_btn_startY+play_btn_Y):
         window.blit(play_btn_img_HL,(play_btn_startX,play_btn_startY))
     else:
@@ -269,6 +271,7 @@ def main():
                         Waves.spawn_enemies()
                         Gun.reset()
                         Player.resetPostion()
+                        Player.health=Player.maxHealth
                         window_state="main_menu"
                 # TODO: Add extra butt
         #==========================================

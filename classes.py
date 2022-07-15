@@ -154,6 +154,9 @@ class gun:
 
     def reset(self):
         self.numBullets = 0
+        for bullet in self.bullets:
+            bullet.shot= False
+            bullet.hit = False
 
     def resetBulletPositions(self):
         self.bullets = []
