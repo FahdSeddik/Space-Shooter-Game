@@ -73,7 +73,7 @@ settings_mainmenu_img_HL = pygame.image.load('./Images/Settings/MainMenu_HL.png'
 # Game clock
 clock = pygame.time.Clock()
 last_cooldown=pygame.time.get_ticks()
-
+highestLevel=0
 # Highscore System
 lastLevel = 0
 with open('highestLevel.txt', 'r') as file:
@@ -99,7 +99,7 @@ def display_wave(level):
 
 # Displaying images/text only for mainmenu
 def mainmenu_display():
-    global play_btn_img,play_btn_startX,play_btn_img_HL,play_btn_X,play_btn_startY,play_btn_Y,name_img
+    global play_btn_img,play_btn_startX,play_btn_img_HL,play_btn_X,play_btn_startY,play_btn_Y,name_img,highestLevel
     mouse_pos = pygame.mouse.get_pos()
     # Check for Hovering over button
     # Display highlighted (HL) btn
@@ -107,6 +107,7 @@ def mainmenu_display():
     press=pygame.transform.scale(press,(press.get_width()/2,press.get_height()/2))
     window.blit(press,(0,screen_Y-press.get_height()))
     window.blit(name_img,(screen_X/2-name_img.get_width()/2,20))
+    highestScoreLabel=font.render("Highest Level = " + str(highestLevel),True,(255,255,255))
     window.blit(highestScoreLabel, (screen_X / 2 - highestScoreLabel.get_width() / 2, screen_Y - highestScoreLabel.get_height()))
     if (mouse_pos[0]>=play_btn_startX and mouse_pos[0]<=play_btn_startX+play_btn_X and mouse_pos[1]>=play_btn_startY and mouse_pos[1]<=play_btn_startY+play_btn_Y):
         window.blit(play_btn_img_HL,(play_btn_startX,play_btn_startY))
@@ -184,17 +185,16 @@ def updateLastLevel(player, level):
         lastLevel = level
 
 def updateHighestLevel():
-    global lastLevel
-    if lastLevel > highestLevel:
-        with open('./highestLevel.txt', 'w') as file:
-            file.write('highestLevel = ' + str(lastLevel))
+    global highestLevel
+    with open('./highestLevel.txt', 'w') as file:
+        file.write('highestLevel = ' + str(highestLevel))
 
 # **************************
 # ----=======Main=======----
 # **************************
 
 def main():
-    global status_bar_height, current_menu_frame,play_frames, screen_X, screen_Y
+    global status_bar_height, current_menu_frame,play_frames, screen_X, screen_Y,highestLevel
     Player = player(window, './Images/Player', 100, 0, 0, 3, 'ready', 10, [screen_X, screen_Y - status_bar_height])
     Player.scale(2)
     Player.resetPostion()
@@ -344,6 +344,8 @@ def main():
             if Waves.isDead() or next_wave:
                 next_wave=False
                 level+=1
+                if level>=highestLevel:
+                    highestLevel=level
                 Waves=Wave(window,difficulty=level)
                 Waves.spawn_enemies()
             if Waves.ready:
