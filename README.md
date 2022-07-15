@@ -8,23 +8,23 @@
 
 # Space-Shooter-Game "AstroZone"
 
-This is a retro-style 2D space-shooter game written in Python using Pygame library.  
+This is a retro-style 2D space-shooter game written in Python (OOP) using Pygame library.  
 <br>
 ## Game Features as of v1.0:
   * Increasing Difficulty each wave
     - More enemies spawn
     - Enemies are harder to kill
-  * Gun realoding and max bullets
+  * Gun reloading and max bullets
   * Health System/Collision System
   * Keep track of high score (furthest wave)
   
 # GamePlay
 
-A showcase of gameplay
+A showcase of gameplay.
 
 https://user-images.githubusercontent.com/62207434/179248003-22f65531-8230-427f-96d2-bc2e11f4b9b2.mp4  
 
-A showcase of a bosswave
+A showcase of a bosswave.
 <br>
 
 https://user-images.githubusercontent.com/62207434/179248542-edb4e476-2174-496c-ae6b-93bd3d577297.mp4
@@ -37,12 +37,14 @@ Game over menu.
 
 # Installation
 
-Currently game does not have .exe version yet. Therefore, you would have to make sure you have all the dependecies installed before you can run the game. <br>
+Currently game does not have .exe version yet. Therefore, you would have to make sure you have all the dependencies installed before you can run the game. <br>
 First, make sure you have the latest version of Python installed on your machine. Second, run this command in your terminal
 ```bash
 pip install pygame
 ```
 After that, you can now execute main.py and have fun! :) <br>
+**Note: game might have image issues on different resolutions.**
+<br>
 # Controls
 
 * Movement Keys:
@@ -74,7 +76,16 @@ As of v1.0 the game currently has 1 boss type.  <br>
 # Information
 Sprites are from [Open Mega Art](https://opengameart.org).
 
-# Collaborators 
+# Tasks 
+- [ ] Fix issue for game to work on all resolutions.
+- [ ] Add sound effects for shooting/explosions.
+- [ ] Add background music.
+- [ ] Implement player/bullet skins.
+- [ ] Implement different wave formations.
+- [ ] Implement homing bullets.
+- [ ] Add moving enemies. 
+
+# Contributors 
 - @FahdSeddik  
 - @AbdelrahmanWaelAtef
 
