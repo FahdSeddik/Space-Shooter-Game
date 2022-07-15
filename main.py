@@ -101,6 +101,9 @@ def mainmenu_display():
     mouse_pos = pygame.mouse.get_pos()
     # Check for Hovering over button
     # Display highlighted (HL) btn
+    press=font.render("Press Esc to exit game.",True,(255,0,0))
+    press=pygame.transform.scale(press,(press.get_width()/2,press.get_height()/2))
+    window.blit(press,(0,screen_Y-press.get_height()))
     window.blit(name_img,(screen_X/2-name_img.get_width()/2,20))
     window.blit(highestScoreLabel, (screen_X / 2 - highestScoreLabel.get_width() / 2, screen_Y - highestScoreLabel.get_height()))
     if (mouse_pos[0]>=play_btn_startX and mouse_pos[0]<=play_btn_startX+play_btn_X and mouse_pos[1]>=play_btn_startY and mouse_pos[1]<=play_btn_startY+play_btn_Y):
@@ -115,8 +118,11 @@ def settings_display():
     global settings_quit_img_HL,settings_quit_img
     global settings_mainmenu_X,settings_mainmenu_Y,settings_mainmenu_img_HL,settings_mainmenu_img
     # Settings Title
-    window.blit(settings_title_img,(screen_X/2-settings_title_X/2,30))
+    window.blit(settings_title_img,(screen_X/2-settings_title_X/2,-50))
     # Check for hovering and display appropriate HL btn img
+    t=font.render("Game Paused",True,(0,255,0))
+    t=pygame.transform.scale(t,(t.get_width()/3,t.get_height()/3))
+    window.blit(t,(screen_X/2-t.get_width()/2,settings_title_Y-120))
     mouse_pos = pygame.mouse.get_pos()
     # Quit BTN
     if (mouse_pos[0]>=screen_X-settings_quit_X and mouse_pos[1]>=screen_Y-settings_quit_Y):
@@ -151,6 +157,13 @@ def player_collisions(player,enemies):
                 player.hit=True
                 enemy.bullet_hit=True
                 player.health-=enemy.dmg
+
+def gameover_display():
+    gameover=font.render("Game Over",True,(255,0,0))
+    press=font.render("Press Esc to return to Main Menu.",True,(255,255,255))
+    gameover=pygame.transform.scale(gameover,(gameover.get_width()*2,gameover.get_height()*2))
+    window.blit(gameover,(screen_X/2-gameover.get_width()/2,screen_Y/2-gameover.get_height()/2))
+    window.blit(press,(screen_X/2-press.get_width()/2,screen_Y-press.get_height()))
 
 def display_health(health,maxhealth):
     global screen_X,screen_Y
@@ -233,6 +246,14 @@ def main():
                 # Play if on settings and pressed ESCAPE
                 elif event.key == pygame.K_ESCAPE and window_state=="settings":
                     window_state="play"
+                elif event.key == pygame.K_ESCAPE and window_state=="game_over":
+                    level=1
+                    Waves=Wave(window,difficulty=level)
+                    Waves.spawn_enemies()
+                    Gun.reset()
+                    Player.resetPostion()
+                    Player.health=Player.maxHealth
+                    window_state="main_menu"
                 # if gun is ready and pressed SPACE change state to fire
                 if event.key == pygame.K_SPACE and window_state=="play":
                     if Player.getGunState() == 'ready':
@@ -309,7 +330,8 @@ def main():
             Player.updatePlayerPosition()
             # Handle Gun states
             Gun.updateBullets()
-
+            if Player.health<=0:
+                window_state="game_over"
             # Display Gun status and player
             display_health(Player.health,Player.maxHealth)
             display_gun_status(Gun.numBullets,Gun.maxBullets)
@@ -329,6 +351,8 @@ def main():
         # Settings display
         elif window_state=="settings":
             settings_display()
+        elif window_state=="game_over":
+            gameover_display()
 #**************************************************
         # Update Screen
         pygame.display.update()
