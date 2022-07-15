@@ -37,7 +37,7 @@ Game over menu.
 
 # Installation
 
-Download code from the latest release on github as a .zip file (latest version v1.1). Unzip file into a folder. Launch "AstroZone.exe" and enjoy! :)   <br>
+Download code from the [latest release](https://github.com/FahdSeddik/Space-Shooter-Game/releases/tag/v1.1) on github as a .zip file (latest version v1.1). Unzip file into a folder. Launch "AstroZone.exe" and enjoy! :)   <br>
 
 **Note: game might have image issues on different resolutions.**
 <br>
