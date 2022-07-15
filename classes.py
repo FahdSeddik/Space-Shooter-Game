@@ -239,7 +239,7 @@ class Enemy():
     def spawn_enemy(self,coordinates):
         #Coordinates are desired center coordinates of the enemy
         self.coordinates=coordinates
-        self.bullet_coords=[coordinates[0]-self.bullet.get_width()/2,coordinates[1]+self.sprite.get_height()/2]
+        self.bullet_coords=[coordinates[0]-self.bullet.get_width()/2,coordinates[1]+self.sprite.get_height()/2-self.bullet.get_height()/2]
         # Collision box for enemy bullet
         #self.bullet_CB = CollisionBox(self.bullet.get_width(),self.bullet.get_height(),self.bullet_coords[0]+self.bullet.get_width()/2,self.bullet_coords[1]+self.bullet.get_height()/2)
         # Collision box for enemy
@@ -259,7 +259,7 @@ class Enemy():
             self.attacking=False
             self.bullet_hit=False
         else:
-            self.bullet_coords=[self.coordinates[0]-self.bullet.get_width()/2,self.coordinates[1]+self.sprite.get_height()/2]
+            self.bullet_coords=[self.coordinates[0]-self.bullet.get_width()/2,self.coordinates[1]+self.sprite.get_height()/2-self.bullet.get_height()/2]
         if self.hit:
             self.exp=explosion(self.window,self.coordinates)
             self.hit=False
